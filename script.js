@@ -1,6 +1,7 @@
 let point = null;
 let bankroll = 1000;
 let currentBet = 0;
+let betLockedIn = false;
 let inPointPhase = false;
 
 const die1El = document.getElementById("die1");
@@ -14,58 +15,82 @@ const chipButtons = document.querySelectorAll(".chip");
 
 chipButtons.forEach(button => {
   button.addEventListener("click", () => {
-    currentBet = parseInt(button.getAttribute("data-value"));
-    messageEl.textContent = `You have selected a $${currentBet} bet.`;
+    if (betLockedIn) {
+      messageEl.textContent = `Bet already placed! Wait for resolution.`;
+      return;
+    }
+    const value = parseInt(button.getAttribute("data-value"));
+    if (bankroll >= value) {
+      currentBet = value;
+      messageEl.textContent = `You have placed a $${currentBet} Pass Line bet. Click Roll to begin.`;
+    } else {
+      messageEl.textContent = `Not enough bankroll to place $${value} bet.`;
+    }
   });
 });
 
 rollBtn.addEventListener("click", () => {
-  if (currentBet === 0) {
-    messageEl.textContent = "Please select a bet amount.";
+  if (currentBet === 0 && !inPointPhase) {
+    messageEl.textContent = "Please place a bet before rolling.";
     return;
   }
-
-  if (bankroll < currentBet) {
-    messageEl.textContent = "Insufficient funds!";
-    return;
-  }
-
-  bankroll -= currentBet;
-  bankrollEl.textContent = `Bankroll: $${bankroll}`;
 
   const roll = rollDice();
+  const total = roll[0] + roll[1];
   die1El.textContent = getDieEmoji(roll[0]);
   die2El.textContent = getDieEmoji(roll[1]);
 
   if (!inPointPhase) {
-    if ([7, 11].includes(roll[0] + roll[1])) {
-      bankroll += currentBet * 2;
+    if (!betLockedIn) {
+      bankroll -= currentBet;
       bankrollEl.textContent = `Bankroll: $${bankroll}`;
-      messageEl.textContent = `You rolled ${roll[0] + roll[1]}. Natural! You win.`;
-    } else if ([2, 3, 12].includes(roll[0] + roll[1])) {
-      messageEl.textContent = `You rolled ${roll[0] + roll[1]}. Craps! You lose.`;
+      betLockedIn = true;
+    }
+
+    if ([7, 11].includes(total)) {
+      bankroll += currentBet * 2; // win = original bet + winnings
+      messageEl.textContent = `You rolled ${total}. Natural! You win.`;
+      resetGame(true);
+    } else if ([2, 3, 12].includes(total)) {
+      messageEl.textContent = `You rolled ${total}. Craps! You lose.`;
+      resetGame(true);
     } else {
-      point = roll[0] + roll[1];
+      point = total;
       inPointPhase = true;
       pointEl.textContent = `Point: ${point}`;
       messageEl.textContent = `Point is set to ${point}. Keep rolling!`;
     }
+
   } else {
-    if (roll[0] + roll[1] === point) {
+    if (total === point) {
       bankroll += currentBet * 2;
-      bankrollEl.textContent = `Bankroll: $${bankroll}`;
-      messageEl.textContent = `You rolled ${roll[0] + roll[1]}. You hit the point! You win.`;
-      resetGame();
-    } else if (roll[0] + roll[1] === 7) {
+      messageEl.textContent = `You rolled ${total}. You hit the point! You win.`;
+      resetGame(true);
+    } else if (total === 7) {
       messageEl.textContent = `You rolled 7. Seven out! You lose.`;
-      resetGame();
+      resetGame(true);
     } else {
-      messageEl.textContent = `You rolled ${roll[0] + roll[1]}. Keep trying for ${point}.`;
+      messageEl.textContent = `You rolled ${total}. Still trying for ${point}.`;
     }
   }
+
+  bankrollEl.textContent = `Bankroll: $${bankroll}`;
 });
 
-resetBtn.addEventListener("click", resetGame);
+resetBtn.addEventListener("click", () => resetGame(false));
+
+function resetGame(resolveBet) {
+  point = null;
+  inPointPhase = false;
+  pointEl.textContent = "Point: —";
+  if (resolveBet) {
+    currentBet = 0;
+    betLockedIn = false;
+  }
+  messageEl.textContent = resolveBet
+    ? "Round over. Place your next bet."
+    : "Game reset.";
+}
 
 function rollDice() {
   return [getDieRoll(), getDieRoll()];
@@ -78,12 +103,4 @@ function getDieRoll() {
 function getDieEmoji(value) {
   const emojis = ["⚀", "⚁", "⚂", "⚃", "⚄", "⚅"];
   return emojis[value - 1];
-}
-
-function resetGame() {
-  point = null;
-  inPointPhase = false;
-  currentBet = 0;
-  pointEl.textContent = "Point: —";
-  messageEl.textContent = "Place your bets and roll the dice!";
 }
