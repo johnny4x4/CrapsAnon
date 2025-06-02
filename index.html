@@ -2,22 +2,34 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Casino Craps</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="container">
-    <h1>🎲 Casino Craps 🎲</h1>
-    <div id="dice-container">
-      <span id="die1">🎲</span>
-      <span id="die2">🎲</span>
-    </div>
-    <p id="game-message">Click "Roll Dice" to begin.</p>
-    <button id="roll-btn">Roll Dice</button>
-    <button id="reset-btn">Reset Game</button>
-    <p id="point-display">Point: —</p>
-  </div>
+  <div id="game-container">
+    <div id="table">
+      <div id="dice">
+        <span id="die1">🎲</span> + <span id="die2">🎲</span>
+      </div>
+      <div id="game-status">
+        <p id="message">Place your bets and roll the dice!</p>
+        <p id="point">Point: —</p>
+        <p id="bankroll">Bankroll: $1000</p>
+      </div>
+      <div id="chip-rack">
+  <button class="chip" data-value="1" style="background-color:#ffffff; color:#000;">$1</button>
+  <button class="chip" data-value="5" style="background-color:#d32f2f;">$5</button>
+  <button class="chip" data-value="10" style="background-color:#1976d2;">$10</button>
+  <button class="chip" data-value="25" style="background-color:#388e3c;">$25</button>
+  <button class="chip" data-value="50" style="background-color:#fbc02d;">$50</button>
+  <button class="chip" data-value="100" style="background-color:#6a1b9a;">$100</button>
+      </div>
 
+      <button id="roll-btn">Roll Dice</button>
+      <button id="reset-btn">Reset Game</button>
+    </div>
+  </div>
   <script src="script.js"></script>
 </body>
 </html>
