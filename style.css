@@ -1,0 +1,37 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #0b3d0b;
+  color: #fff;
+  text-align: center;
+  padding: 2rem;
+}
+
+.container {
+  background-color: #145214;
+  padding: 2rem;
+  border-radius: 10px;
+  width: 300px;
+  margin: auto;
+  box-shadow: 0 0 20px #000;
+}
+
+#dice-container {
+  font-size: 4rem;
+  margin: 1rem 0;
+}
+
+button {
+  padding: 0.5rem 1rem;
+  margin: 0.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  border: none;
+  border-radius: 5px;
+  background-color: #ffc107;
+  color: #000;
+}
+
+#point-display {
+  font-weight: bold;
+  margin-top: 1rem;
+}
